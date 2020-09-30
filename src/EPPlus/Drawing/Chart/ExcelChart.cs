@@ -25,6 +25,8 @@ using OfficeOpenXml.Drawing.Style.Effect;
 using OfficeOpenXml.Style;
 using OfficeOpenXml.Drawing.Style.ThreeD;
 using OfficeOpenXml.Drawing.Chart.ChartEx;
+using System.Linq;
+
 namespace OfficeOpenXml.Drawing.Chart
 {
     /// <summary>
@@ -491,6 +493,20 @@ namespace OfficeOpenXml.Drawing.Chart
                     ChartType == eChartType.StockVHLC ||
                     ChartType == eChartType.StockVOHLC;
         }
+
+        internal void ReIndexSeries()
+        {
+            if (_isChartEx) return;
+            var ix = 0;
+            foreach(var ct in PlotArea.ChartTypes)
+            {
+                foreach (var s in ct.Series.OrderBy(x=>x.Order))
+                {
+                    s.SetID((ix++).ToString());
+                }
+            }
+        }
+
         /// <summary>
         /// Returns true if the chart has shapes, like bars and columns
         /// </summary>

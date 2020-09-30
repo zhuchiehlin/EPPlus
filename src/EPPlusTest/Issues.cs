@@ -1347,5 +1347,52 @@ namespace EPPlusTest
                 SaveAndCleanup(p);
             }
         }
+        [TestMethod]
+        public void Issue193()
+        {
+            using (var p = OpenPackage("Issue193.xlsx",true))
+            {
+                var ws = p.Workbook.Worksheets.Add("Column");
+                var l = new List<MyChartData>()
+                {
+                    new MyChartData{ Location="SS", SkipCell=null, Value1=0.164, Value2=0.159, Value3= 0.166},
+                    new MyChartData{ Location="TT", SkipCell=null, Value1=0.189, Value2=0.355, Value3=0.159},
+                    new MyChartData{ Location="UU", SkipCell=null, Value1=0.178, Value2=0.159, Value3= 0.166}
+                };
+
+                ws.Cells["B1"].LoadFromCollection(l, true, OfficeOpenXml.Table.TableStyles.Medium12);
+
+                var chart = ws.Drawings.AddBarChart("Bar1", eBarChartType.ColumnClustered);
+                var serie0 = chart.Series.Add("E2:E4", "B2:B4");
+                serie0.Header = "E";
+                var serie1 = chart.Series.Add("D2:D4", "B2:B4");
+                serie1.Header = "D";
+                var serie2 = chart.Series.Add("F2:F4", "B2:B4");
+                serie2.Header = "F";
+
+                chart.Series.Delete(2);
+                chart.Series.Delete(0);
+
+                var lineChartType = chart.PlotArea.ChartTypes.Add(eChartType.Line);
+                var lineSeries = lineChartType.Series.Add("E2:E4", "B2:B4");
+                lineSeries.Header = "Line Series E";
+                var lineSeries2 = lineChartType.Series.Add("F2:F4", "B2:B4");
+                lineSeries2.Header = "Line Series F";
+
+                chart.SetPosition(2, 0, 15, 0);
+                chart.SetSize(1600, 900);
+
+                SaveAndCleanup(p);
+            }
+        }
+
+    private class MyChartData
+        {
+            public string Location { get; set; }
+            public string SkipCell { get; set; }
+            public double Value1 { get; set; }
+            public double Value2 { get; set; }
+            public double Value3 { get; set; }
+        }
     }
 }

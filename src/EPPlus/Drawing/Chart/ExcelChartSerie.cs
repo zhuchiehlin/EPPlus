@@ -112,6 +112,20 @@ namespace OfficeOpenXml.Drawing.Chart
                 return _threeD;
             }
         }
+        internal int Id
+        {
+            get
+            {
+                return GetXmlNodeInt("@id");
+            }
+        }
+        internal int Order
+        {
+            get
+            {
+                return GetXmlNodeInt("@order");
+            }
+        }
         public abstract int NumberOfItems { get; }
         public abstract ExcelChartTrendlineCollection TrendLines{ get; }
         internal abstract void SetID(string id);

@@ -420,6 +420,7 @@ namespace OfficeOpenXml.Drawing.Chart
                 serie.XSeries = XSerieAddress;
             }
             _list.Add((T)serie);
+            _chart.ReIndexSeries();
             if (_chart.StyleManager.StylePart != null && _chart._isChartEx == false)
             {
                 _chart.StyleManager.ApplySeries();

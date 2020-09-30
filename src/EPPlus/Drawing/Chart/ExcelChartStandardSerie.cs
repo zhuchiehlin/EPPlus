@@ -531,45 +531,10 @@ namespace OfficeOpenXml.Drawing.Chart
                 ser.InnerXml = chart._drawings._seriesTemplateXml;
             }
 
-            int idx = FindIndex(chart._topChart??chart);
-            ser.InnerXml = string.Format("<c:idx val=\"{1}\" /><c:order val=\"{1}\" /><c:tx><c:strRef><c:f></c:f><c:strCache><c:ptCount val=\"1\" /></c:strCache></c:strRef></c:tx>{2}{5}{0}{3}{4}", AddExplosion(chart.ChartType), idx, AddSpPrAndScatterPoint(chart.ChartType), AddAxisNodes(chart.ChartType), AddSmooth(chart.ChartType), AddMarker(chart.ChartType));
+            ser.InnerXml = string.Format("<c:idx val=\"0\" /><c:order val=\"0\" /><c:tx><c:strRef><c:f></c:f><c:strCache><c:ptCount val=\"1\" /></c:strCache></c:strRef></c:tx>{1}{4}{0}{2}{3}", AddExplosion(chart.ChartType), AddSpPrAndScatterPoint(chart.ChartType), AddAxisNodes(chart.ChartType), AddSmooth(chart.ChartType), AddMarker(chart.ChartType));
             return ser;
         }
 
-        private static int FindIndex(ExcelChart chart)
-        {
-            int ret = 0, newID = 0;
-            if (chart.PlotArea.ChartTypes.Count > 1)
-            {
-                foreach (var chartType in chart.PlotArea.ChartTypes)
-                {
-                    if (newID > 0)
-                    {
-                        foreach (ExcelChartSerie serie in chartType.Series)
-                        {
-                            serie.SetID((++newID).ToString());
-                        }
-                    }
-                    else
-                    {
-                        if (chartType == chart)
-                        {
-                            ret += chartType.Series.Count + 1;
-                            newID = ret;
-                        }
-                        else
-                        {
-                            ret += chartType.Series.Count;
-                        }
-                    }
-                }
-                return ret - 1;
-            }
-            else
-            {
-                return chart.Series.Count;
-            }
-        }
         #region "Xml init Functions"
         private static string AddMarker(eChartType chartType)
         {
