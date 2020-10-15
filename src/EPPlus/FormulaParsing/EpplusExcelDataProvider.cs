@@ -17,6 +17,8 @@ using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using OfficeOpenXml.Utils;
 using OfficeOpenXml.Style.XmlAccess;
 using OfficeOpenXml.Core.CellStore;
+using OfficeOpenXml.Table.PivotTable;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 
 namespace OfficeOpenXml.FormulaParsing
 {
@@ -544,6 +546,22 @@ namespace OfficeOpenXml.FormulaParsing
         public override void Reset()
         {
             _names = new Dictionary<ulong, INameInfo>(); //Reset name cache.            
+        }
+
+        internal override ExcelPivotTable GetPivotTableFromAddress(string worksheetName, string address)
+        {
+            var ws = _package.Workbook.Worksheets[worksheetName];
+            if(ws!=null)
+            {
+                foreach(var pt in ws.PivotTables)
+                {
+                    if (pt.Address.Collide(new ExcelAddressBase(address))!=ExcelAddressBase.eAddressCollition.No)
+                    {
+                        return pt;
+                    }
+                }
+            }
+            return null;
         }
 
         //public override void SetToTableAddress(ExcelAddress address)

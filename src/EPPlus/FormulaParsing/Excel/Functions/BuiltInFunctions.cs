@@ -207,6 +207,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
             Functions["index"] = new RefAndLookup.Index();
             Functions["indirect"] = new Indirect();
             Functions["offset"] = new Offset();
+            Functions["getpivotdata"] = new RefAndLookup.GetPivotData();
             // Date
             Functions["date"] = new Date();
             Functions["today"] = new Today();
