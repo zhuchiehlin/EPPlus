@@ -149,6 +149,6 @@ namespace OfficeOpenXml.FormulaParsing
         public abstract void Reset();
         public abstract IRangeInfo GetRange(string worksheet, int fromRow, int fromCol, int toRow, int toCol);
 
-        internal abstract ExcelPivotTable GetPivotTableFromAddress(string worksheetName, string address);
+        public abstract ExcelPivotTable GetPivotTableFromAddress(string worksheetName, string address);
     }
 }

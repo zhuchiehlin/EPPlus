@@ -1379,7 +1379,7 @@ namespace EPPlusTest
                 SaveAndCleanup(p);
             }
         }
-        [TestMethod]
+        [TestMethod, Ignore]
         public void DrawingIssue()
         {
             using (var p = OpenTemplatePackage("test.xlsx"))
@@ -1387,6 +1387,28 @@ namespace EPPlusTest
                 var ws = p.Workbook.Worksheets[0];
                 ws.Drawings.Clear();
                 SaveAndCleanup(p);
+            }
+        }
+        [TestMethod]
+        public void DeleteTable()
+        {
+            using (var p = OpenTemplatePackage("Issue199.xlsx"))
+            {
+                foreach (var worksheet in p.Workbook.Worksheets)
+                {
+                    while (worksheet.Tables.Count > 0)
+                    {
+                        worksheet.Tables.Delete(0, true);
+                    }
+                }
+                p.Save();
+                var p2 = new ExcelPackage(p.Stream);
+
+                foreach (var worksheet in p2.Workbook.Worksheets)
+                {
+                    Assert.AreEqual(0, worksheet.Tables.Count);
+                }
+
             }
         }
     }

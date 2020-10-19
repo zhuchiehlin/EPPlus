@@ -153,11 +153,12 @@ namespace OfficeOpenXml.Table
                     }
                     Table.WorkSheet.Workbook._nextTableID--;
                 }
+                Table.DeleteMe();
                 if (ClearRange)
                 {
                     var range = _ws.Cells[Table.Address.Address];
                     range.Clear();
-                }
+                }                
             }
 
         }

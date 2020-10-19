@@ -39,7 +39,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var l = arguments.ToList();
             if (l.Count % 2 == 1) ExcelErrorValue.Create(eErrorType.Ref);
 
-            var dataField = pt.Fields[l[0].ToString()];
+            var dataField = pt.Fields[l[0].Value.ToString()];
             if(dataField==null || dataField.IsDataField==false)
             {
                 return ExcelErrorValue.Create(eErrorType.Ref);
@@ -47,8 +47,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var fields = new List<string[]>();
             for (int i=2;i<l.Count;i+=2)
             {                
-                var fieldName = l[i].ToString();
-                var item = l[i + 1].ToString();
+                var fieldName = l[i].Value.ToString();
+                var item = l[i + 1].Value.ToString();
 
                 var f = pt.Fields[fieldName];
                 if(f.IsColumnField==true || f.IsRowField==true)

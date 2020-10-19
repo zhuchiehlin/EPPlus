@@ -548,7 +548,7 @@ namespace OfficeOpenXml.FormulaParsing
             _names = new Dictionary<ulong, INameInfo>(); //Reset name cache.            
         }
 
-        internal override ExcelPivotTable GetPivotTableFromAddress(string worksheetName, string address)
+        public override ExcelPivotTable GetPivotTableFromAddress(string worksheetName, string address)
         {
             var ws = _package.Workbook.Worksheets[worksheetName];
             if(ws!=null)
