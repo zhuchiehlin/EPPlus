@@ -23,9 +23,19 @@ using OfficeOpenXml.Constants;
 using OfficeOpenXml.Filter;
 using EPPlusTest.Table.PivotTable.Filter;
 using OfficeOpenXml.Packaging.Ionic;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 
 namespace OfficeOpenXml.Table.PivotTable
 {
+    public class PivotTableDataParam
+    {
+        public PivotTableDataParam(string fieldName, string itemValue)
+        {
+
+        }
+        public string FieldName { get; set; }
+        public string ItemValue { get; set; }
+    }
     /// <summary>
     /// An Excel Pivottable
     /// </summary>
@@ -99,6 +109,51 @@ namespace OfficeOpenXml.Table.PivotTable
                 }
             }
         }
+
+        internal object GetPivotData(string dataFieldName, params string[] p)
+        {
+            var l = p.ToList();
+            if (l.Count % 2 == 1) ExcelErrorValue.Create(eErrorType.Ref);
+
+            var field = Fields[dataFieldName];
+            if (field == null || field.IsDataField == false)
+            {
+                return ExcelErrorValue.Create(eErrorType.Ref);
+            }
+            var df = DataFields.FirstOrDefault(x=>x.Field==field);
+
+            var items = GetFieldItemsParams(l);
+            if(df==null || items==null)
+            {
+                return ExcelErrorValue.Create(eErrorType.Ref); 
+            }
+            else
+            {
+                return CacheDefinition.GetPivotData(items, df);
+            }
+        }
+
+        private List<PivotTableDataParam> GetFieldItemsParams(List<string> l)
+        {
+            var items = new List<PivotTableDataParam>();
+            for (int i = 2; i < l.Count; i += 2)
+            {
+                var fieldName = l[i];
+                var item = l[i + 1];
+
+                var f = Fields[fieldName];
+                if (f.IsColumnField == true || f.IsRowField == true)
+                {
+                    items.Add(new PivotTableDataParam(fieldName, item));
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return items;
+        }
+
         /// <summary>
         /// Add a new pivottable
         /// </summary>
@@ -1046,6 +1101,24 @@ namespace OfficeOpenXml.Table.PivotTable
                     //SetXmlNodeString(STYLENAME_PATH, "PivotStyle" + value.ToString());
                     StyleName = "PivotStyle" + value.ToString();
                 }
+            }
+        }
+        const string _showValuesRowPath = "d:extLst/d:ext[@uri='"+ExtLstUris.PivotTableDefinitionUri+"']/x14:pivotTableDefinition/@hideValuesRow";
+        /// <summary>
+        /// If the pivot tables value row is visible or not. 
+        /// This property only applies when <see cref="GridDropZones"/> is set to false.
+        /// </summary>
+        public bool ShowValuesRow
+        {
+            get
+            {
+                return !GetXmlNodeBool(_showValuesRowPath);
+            }
+            set
+            {
+                var node = GetOrCreateExtLstSubNode(ExtLstUris.PivotTableDefinitionUri, "x14");
+                var xh=XmlHelperFactory.Create(NameSpaceManager, node);
+                xh.SetXmlNodeBool("x14:pivotTableDefinition/@hideValuesRow", !value);
             }
         }
 

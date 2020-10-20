@@ -34,25 +34,15 @@ using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using OfficeOpenXml;
-using OfficeOpenXml.FormulaParsing.Logging;
 using OfficeOpenXml.Style;
 using System.Data;
 using OfficeOpenXml.Table;
 using System.Collections.Generic;
 using OfficeOpenXml.Table.PivotTable;
-using OfficeOpenXml.Drawing.Chart;
 using System.Text;
-using System.Dynamic;
 using System.Globalization;
 using OfficeOpenXml.Drawing;
-using OfficeOpenXml.FormulaParsing;
 using System.Threading;
-using System.Text.RegularExpressions;
-using System.IO.Compression;
-using OfficeOpenXml.ConditionalFormatting;
-using OfficeOpenXml.ConditionalFormatting.Contracts;
-using System.Security.Cryptography.X509Certificates;
-
 namespace EPPlusTest
 {
     /// <summary>
@@ -1261,15 +1251,6 @@ namespace EPPlusTest
             }
         }
         [TestMethod]
-        public void Issue108()
-        {
-            using (var p = OpenTemplatePackage("Test.xlsx"))
-            {
-                Assert.AreEqual(3, ((ExcelShape)p.Workbook.Worksheets[0].Drawings[0]).RichText.Count);
-                SaveWorkbook("Issue108.xlsx", p);
-            }
-        }
-        [TestMethod]
         public void Issue115()
         {
             using (var p = OpenPackage("Issue115.xlsx", true))
@@ -1377,38 +1358,6 @@ namespace EPPlusTest
             {
                 var ws = p.Workbook.Worksheets[1];
                 SaveAndCleanup(p);
-            }
-        }
-        [TestMethod, Ignore]
-        public void DrawingIssue()
-        {
-            using (var p = OpenTemplatePackage("test.xlsx"))
-            {
-                var ws = p.Workbook.Worksheets[0];
-                ws.Drawings.Clear();
-                SaveAndCleanup(p);
-            }
-        }
-        [TestMethod]
-        public void DeleteTable()
-        {
-            using (var p = OpenTemplatePackage("Issue199.xlsx"))
-            {
-                foreach (var worksheet in p.Workbook.Worksheets)
-                {
-                    while (worksheet.Tables.Count > 0)
-                    {
-                        worksheet.Tables.Delete(0, true);
-                    }
-                }
-                p.Save();
-                var p2 = new ExcelPackage(p.Stream);
-
-                foreach (var worksheet in p2.Workbook.Worksheets)
-                {
-                    Assert.AreEqual(0, worksheet.Tables.Count);
-                }
-
             }
         }
     }

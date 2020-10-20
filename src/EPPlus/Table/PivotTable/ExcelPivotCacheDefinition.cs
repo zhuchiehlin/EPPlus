@@ -17,6 +17,7 @@ using OfficeOpenXml.Utils;
 using System.Security;
 using System.Linq;
 using OfficeOpenXml.Packaging;
+using System.Collections.Generic;
 
 namespace OfficeOpenXml.Table.PivotTable
 {
@@ -112,6 +113,14 @@ namespace OfficeOpenXml.Table.PivotTable
                 return _cacheReference.CacheDefinitionUri;
             }
         }
+
+        internal object GetPivotData(List<PivotTableDataParam> items, ExcelPivotTableDataField dataField)
+        {
+            var key = items.Select(x => x.FieldName).OrderBy(x => x).Aggregate((x, y) => x + y) + dataField.Function.ToString();
+            //TODO implement. Should also handle ShowAs
+            return 0;
+        }
+
         internal ZipPackageRelationship Relationship
         {
             get;

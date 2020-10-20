@@ -19,50 +19,41 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
         public override CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
         {
             ValidateArguments(arguments, 2);
-            var address = ArgToAddress(arguments, 1, context);
-            var pt = context.ExcelDataProvider.GetPivotTableFromAddress(context.Scopes.Current.Address.Worksheet, address);
-            object v;
-            if(pt==null)
+            int ix = 0;
+            ExcelPivotTable pt=null;
+            string dataFieldName = "";
+            var paramList= new List<string>();
+            foreach (var arg in arguments)
             {
-                v = ExcelErrorValue.Create(eErrorType.Ref);            
+                if(ix==0)
+                {
+                    dataFieldName = arg.Value.ToString();
+                }
+                else if (ix==1)
+                {
+                    var address = ArgToAddress(arguments, 1, context);
+                    pt = context.ExcelDataProvider.GetPivotTableFromAddress(context.Scopes.Current.Address.Worksheet, address);
+                }
+                else
+                {
+                    paramList.Add(arg.Value.ToString());
+                }
+            }
+
+            object v;
+            if (pt == null || string.IsNullOrEmpty(dataFieldName))
+            {
+                v=ExcelErrorValue.Create(eErrorType.Ref);
             }
             else
             {
-                v = GetData(pt, arguments);
+                v = pt.GetPivotData(dataFieldName, paramList.ToArray());
             }
+
             var crf = new CompileResultFactory();
             return crf.Create(v);
         }
 
-        private object GetData(ExcelPivotTable pt, IEnumerable<FunctionArgument> arguments)
-        {
-            var l = arguments.ToList();
-            if (l.Count % 2 == 1) ExcelErrorValue.Create(eErrorType.Ref);
-
-            var dataField = pt.Fields[l[0].Value.ToString()];
-            if(dataField==null || dataField.IsDataField==false)
-            {
-                return ExcelErrorValue.Create(eErrorType.Ref);
-            }
-            var fields = new List<string[]>();
-            for (int i=2;i<l.Count;i+=2)
-            {                
-                var fieldName = l[i].Value.ToString();
-                var item = l[i + 1].Value.ToString();
-
-                var f = pt.Fields[fieldName];
-                if(f.IsColumnField==true || f.IsRowField==true)
-                {
-                    fields.Add(new string[] { fieldName, item });
-                }
-                else
-                {
-                    return ExcelErrorValue.Create(eErrorType.Ref);
-                }                
-            }
-
-            return CalculateData(pt, fields);
-        }
 
         private object CalculateData(ExcelPivotTable pt, List<string[]> fields)
         {
